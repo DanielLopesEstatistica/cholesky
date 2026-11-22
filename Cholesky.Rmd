@@ -1,0 +1,58 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-03-28"
+---
+
+```{r}
+cholesky = function(matriz){
+  n = nrow(matriz)
+  
+  for(i in 1:n){
+    if(i > 1){
+      matriz[i,i] = matriz[i,i] - sum((matriz[(1:(i-1)),i])^2)
+    }
+    else{
+      matriz[i,i] = matriz[i,i]
+    }
+  if(matriz[i,i] <= 0){
+    print("Não é positivo-definida")
+    return()
+  }
+  matriz[i,i] = sqrt(matriz[i,i])
+  
+  for(j in 1:n){
+    if(j < i){
+      matriz[i,j] = 0
+    }
+    if(j > i){
+      if(i > 1){
+        matriz[i,j] = matriz[i,j] - sum(matriz[(1:(i-1)),i] %*% matriz[(1:(i-1)), j])
+      }
+      matriz[i,j] = matriz[i,j]/matriz[i,i]
+    } 
+  }
+  }
+  
+  return(matriz)
+}
+```
+
+```{r}
+Rand_PD_Matrix = function(dim){
+  n = dim
+  values = sample(1:10, n^2, replace = TRUE)
+  matrix = upper.tri(diag(n), diag = TRUE)*values
+  matrix = t(matrix) %*% matrix
+  return(matrix)
+}
+```
+
+```{r}
+size = 1000
+
+M = Rand_PD_Matrix(size)
+X = cholesky(M)
+all(t(X)%*%X == M)
+```
+
